@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nourish Search | Nutrition Food Finder</title>
+    <meta
+      name="description"
+      content="Search USDA and Open Food Facts nutrition data, compare serving-based nutrients, and calculate meal totals."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#results">Skip to results</a>
+    <header class="app-header">
+      <div class="brand-lockup" aria-label="Nourish Search">
+        <span class="brand-mark" aria-hidden="true">N</span>
+        <span>
+          <strong>Nourish Search</strong>
+          <small>Nutrition-first food lookup</small>
+        </span>
+      </div>
+      <nav class="top-nav" aria-label="Page sections">
+        <a href="#search">Search</a>
+        <a href="#meal">Meal Calculator</a>
+        <a href="#sources">Sources</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="search" class="search-panel" aria-labelledby="search-title">
+        <div class="search-copy">
+          <p class="eyebrow">USDA + Open Food Facts</p>
+          <h1 id="search-title">Find clear nutrition facts by food, serving, and cooking style.</h1>
+          <p>
+            Search generic foods, compare records from both databases, and add ingredients to a
+            meal without brand listings or price noise.
+          </p>
+        </div>
+
+        <form class="search-box" id="food-search-form">
+          <label for="food-query">Food name</label>
+          <div class="search-row">
+            <input
+              id="food-query"
+              name="query"
+              type="search"
+              value="eggs"
+              placeholder="Try eggs, oats, salmon, rice..."
+              autocomplete="off"
+              required
+            />
+            <button type="submit">Search</button>
+          </div>
+          <div class="settings-row">
+            <label for="serving-size">Serving size</label>
+            <div class="input-with-unit">
+              <input id="serving-size" type="number" min="1" max="1000" step="1" value="100" />
+              <span>g</span>
+            </div>
+            <details class="api-key-panel">
+              <summary>USDA key</summary>
+              <label for="usda-key">FoodData Central API key</label>
+              <div class="key-row">
+                <input id="usda-key" type="password" autocomplete="off" placeholder="Paste key" />
+                <button type="button" id="save-key">Save</button>
+              </div>
+              <p id="key-status" role="status">Stored only in this browser.</p>
+            </details>
+          </div>
+        </form>
+
+        <div class="prep-filter" aria-label="Preparation filter">
+          <button class="prep-chip active" type="button" data-prep="all">All</button>
+          <button class="prep-chip" type="button" data-prep="raw">Raw</button>
+          <button class="prep-chip" type="button" data-prep="boiled">Boiled</button>
+          <button class="prep-chip" type="button" data-prep="fried">Fried</button>
+          <button class="prep-chip" type="button" data-prep="baked">Baked</button>
+          <button class="prep-chip" type="button" data-prep="roasted">Roasted</button>
+          <button class="prep-chip" type="button" data-prep="grilled">Grilled</button>
+          <button class="prep-chip" type="button" data-prep="canned">Canned</button>
+        </div>
+      </section>
+
+      <section class="content-grid">
+        <section id="results" class="results-section" aria-labelledby="results-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Food Database</p>
+              <h2 id="results-title">Search results</h2>
+            </div>
+            <p id="result-count" aria-live="polite">Ready to search.</p>
+          </div>
+          <div id="status-message" class="status-message" role="status">
+            Enter a food and search to compare nutrition records.
+          </div>
+          <div id="results-grid" class="results-grid" aria-live="polite"></div>
+        </section>
+
+        <aside id="meal" class="meal-panel" aria-labelledby="meal-title">
+          <div class="meal-header">
+            <div>
+              <p class="eyebrow">Menu Builder</p>
+              <h2 id="meal-title">Meal nutritional calculator</h2>
+            </div>
+            <button type="button" id="clear-meal" class="secondary-button">Clear</button>
+          </div>
+
+          <div id="meal-items" class="meal-items">
+            <p class="empty-meal">Add ingredients from the search results to start a meal total.</p>
+          </div>
+
+          <dl class="totals-grid" id="meal-totals">
+            <div><dt>Calories</dt><dd data-total="calories">0</dd></div>
+            <div><dt>Protein</dt><dd data-total="protein">0 g</dd></div>
+            <div><dt>Fiber</dt><dd data-total="fiber">0 g</dd></div>
+            <div><dt>Carbs</dt><dd data-total="carbs">0 g</dd></div>
+            <div><dt>Fat</dt><dd data-total="fat">0 g</dd></div>
+            <div><dt>Sodium</dt><dd data-total="sodium">0 mg</dd></div>
+          </dl>
+        </aside>
+      </section>
+
+      <section id="sources" class="sources-panel" aria-labelledby="sources-title">
+        <div>
+          <p class="eyebrow">Responsible Nutrition Data</p>
+          <h2 id="sources-title">Source notes</h2>
+        </div>
+        <p>
+          Results normalize nutrition per selected serving grams. USDA records are generally
+          generic food composition records; Open Food Facts records may describe packaged foods and
+          can be incomplete. Cooking style is inferred from record descriptions and categories.
+        </p>
+      </section>
+    </main>
+
+    <template id="result-card-template">
+      <article class="result-card">
+        <div class="card-topline">
+          <span class="source-pill"></span>
+          <span class="prep-pill"></span>
+        </div>
+        <h3></h3>
+        <p class="result-meta"></p>
+        <dl class="nutrition-grid"></dl>
+        <div class="serving-control">
+          <label>
+            Serving
+            <span class="input-with-unit small">
+              <input class="card-serving" type="number" min="1" max="1000" step="1" />
+              <span>g</span>
+            </span>
+          </label>
+          <button type="button" class="add-button">Add to meal</button>
+        </div>
+      </article>
+    </template>
+
+    <script src="script.js"></script>
+  </body>
+</html>
