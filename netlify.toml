@@ -1,0 +1,7 @@
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/api/deepl-translate"
+  to = "/.netlify/functions/deepl-translate"
+  status = 200

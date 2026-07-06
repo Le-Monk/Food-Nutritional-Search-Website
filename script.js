@@ -3,6 +3,7 @@
 
   const USDA_SEARCH_URL = "https://api.nal.usda.gov/fdc/v1/foods/search";
   const OPEN_FOOD_FACTS_URL = "https://world.openfoodfacts.org/api/v2/search";
+  const DEEPL_PROXY_URLS = ["/.netlify/functions/deepl-translate", "/api/deepl-translate"];
   const USDA_KEY_STORAGE = "nourish-search-usda-key";
   const MEAL_STORAGE = "nourish-search-meal";
   const LANGUAGE_STORAGE = "nourish-search-language";
@@ -35,6 +36,19 @@
     snack: 0.15,
     meal: 1 / 3,
     day: 1,
+  };
+
+  const deepLTargetLanguages = {
+    en: "EN-US",
+    zh: "ZH",
+    hi: "HI",
+    es: "ES",
+    fr: "FR",
+    ar: "AR",
+    bn: "BN",
+    ru: "RU",
+    pt: "PT-BR",
+    ur: "UR",
   };
 
   const foodPhraseTranslations = [
@@ -1021,9 +1035,13 @@
       }
     }
 
-    return products
+    const matchedProducts = products
       .filter((product) => productMatchesQuery(product, query))
-      .map((product) => normalizeOpenFoodFactsFood(product, query))
+      .slice(0, 18);
+    const translatedNames = await translateOpenFoodFactsProductNames(matchedProducts, query);
+
+    return matchedProducts
+      .map((product, index) => normalizeOpenFoodFactsFood(product, query, translatedNames[index]))
       .filter(Boolean);
   }
 
@@ -1043,6 +1061,74 @@
     } catch {
       throw new Error("Open Food Facts returned an unreadable response.");
     }
+  }
+
+  async function translateOpenFoodFactsProductNames(products, query) {
+    const fallbackNames = products.map((product) => bestProductName(product, query));
+    const targetLang = deepLTargetLanguages[state.language];
+    if (!targetLang || !products.length) {
+      return fallbackNames;
+    }
+
+    const sourceNames = products.map((product) => sourceProductNameForDeepL(product, query));
+    if (!sourceNames.some(Boolean)) {
+      return fallbackNames;
+    }
+
+    const payload = {
+      text: sourceNames,
+      target_lang: targetLang,
+      context: `These are short food product names from a nutrition search for "${query}". Translate the food name clearly and concisely. Preserve product nutrition meaning, but do not include brands or prices.`,
+    };
+
+    for (const url of DEEPL_PROXY_URLS) {
+      try {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+          continue;
+        }
+        const data = await response.json();
+        const translated = (data.translations || []).map((entry) => entry.text || "");
+        if (translated.length === sourceNames.length) {
+          return translated.map((text, index) => cleanFoodName(text) || fallbackNames[index]);
+        }
+      } catch {
+        // Try the next proxy URL, then fall back to local phrase cleanup.
+      }
+    }
+
+    return fallbackNames;
+  }
+
+  function sourceProductNameForDeepL(product, query) {
+    return cleanSourceProductText(
+      product.product_name
+        || product.generic_name
+        || product[`product_name_${state.language}`]
+        || product[`generic_name_${state.language}`]
+        || product.product_name_en
+        || product.generic_name_en
+        || product.categories
+        || product.categories_en
+        || query,
+    );
+  }
+
+  function cleanSourceProductText(value) {
+    return String(value || "")
+      .split(",")
+      .map((part) => part.trim())
+      .filter((part) => !/^[a-z]{2}:/i.test(part))
+      .join(", ")
+      .replace(/\s+/g, " ")
+      .replace(/, UPC:.*/i, "")
+      .trim();
   }
 
   function normalizeUsdaFood(food) {
@@ -1070,7 +1156,7 @@
     };
   }
 
-  function normalizeOpenFoodFactsFood(product, query) {
+  function normalizeOpenFoodFactsFood(product, query, translatedName) {
     const nutriments = product.nutriments || {};
     const nutrients = {};
     for (const [key, def] of Object.entries(nutrientDefs)) {
@@ -1081,7 +1167,7 @@
       return null;
     }
 
-    const name = bestProductName(product, query);
+    const name = translatedName || bestProductName(product, query);
     const categories = localizedProductValue(product, "categories");
     const prep = inferPreparation([name, categories]);
     const metaParts = [t("openPackagedRecord")];

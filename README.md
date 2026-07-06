@@ -11,6 +11,7 @@ Nourish Search is a lightweight nutritional food search website that combines ge
 - Add foods to a meal calculator and sum nutrition for the whole menu.
 - Compare meal totals against snack, single-meal, or full-day nutrition targets, with low, in-range, and high guidance for every nutrient category.
 - Switch the website language. English is the default, with Mandarin Chinese, Hindi, Spanish, French, Arabic, Bengali, Russian, Portuguese, and Urdu also available.
+- Translate Open Food Facts product names through a DeepL proxy when the site is deployed with a `DEEPL_API_KEY` environment variable.
 - Save a USDA API key locally in the browser without committing it to the repository.
 
 ## Data Sources
@@ -33,3 +34,13 @@ Then visit `http://localhost:8080`.
 The app does not commit USDA API keys. Use the API key field in the page to save a key to `localStorage` for your browser session.
 
 Nutrition target guidance is an estimate based on common daily nutrition reference values and scaled for the selected target type. It is informational and not medical advice.
+
+## DeepL Translation Proxy
+
+DeepL does not allow browser-only calls because that would expose the API key. This repo includes a Netlify function at `netlify/functions/deepl-translate.js`. To enable product-name translation, deploy with:
+
+```bash
+DEEPL_API_KEY=your_deepl_key
+```
+
+The frontend calls `/api/deepl-translate` and falls back to local food-phrase cleanup if the proxy is unavailable.
