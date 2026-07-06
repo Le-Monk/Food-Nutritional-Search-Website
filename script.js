@@ -37,17 +37,66 @@
     day: 1,
   };
 
-  const openFoodFactsLanguageAliases = {
-    en: ["en"],
-    zh: ["zh", "zh-cn", "zh-tw"],
-    hi: ["hi"],
-    es: ["es"],
-    fr: ["fr"],
-    ar: ["ar"],
-    bn: ["bn"],
-    ru: ["ru"],
-    pt: ["pt", "pt-br", "pt-pt"],
-    ur: ["ur"],
+  const foodPhraseTranslations = [
+    { pattern: /\bblancs?\s+de\s+poulet\b/gi, en: "chicken breast" },
+    { pattern: /\bpechuguitas?\s+de\s+pollo\b/gi, en: "chicken breast" },
+    { pattern: /\bpechugas?\s+de\s+pollo\b/gi, en: "chicken breast" },
+    { pattern: /\bfilets?\s+de\s+poulet\b/gi, en: "chicken fillet" },
+    { pattern: /\bpoulet\b/gi, en: "chicken" },
+    { pattern: /\bpollo\b/gi, en: "chicken" },
+    { pattern: /\bdinde\b/gi, en: "turkey" },
+    { pattern: /\bdindes\b/gi, en: "turkey" },
+    { pattern: /\bœufs?\b/gi, en: "eggs" },
+    { pattern: /\boeufs?\b/gi, en: "eggs" },
+    { pattern: /\bhuevos?\b/gi, en: "eggs" },
+    { pattern: /\bovo?s?\b/gi, en: "eggs" },
+    { pattern: /\bnature\b/gi, en: "plain" },
+    { pattern: /\bsans\s+nitrite\b/gi, en: "without nitrite" },
+    { pattern: /\bsans\s+sucre\b/gi, en: "unsweetened" },
+    { pattern: /\bsin\s+az[uú]car\b/gi, en: "unsweetened" },
+    { pattern: /\basada?\s+al\s+horno\b/gi, en: "oven roasted" },
+    { pattern: /\bau\s+four\b/gi, en: "oven baked" },
+    { pattern: /\bal\s+horno\b/gi, en: "oven baked" },
+    { pattern: /\bgrill[eé]e?s?\b/gi, en: "grilled" },
+    { pattern: /\ba\s+la\s+parrilla\b/gi, en: "grilled" },
+    { pattern: /\bfum[eé]e?s?\b/gi, en: "smoked" },
+    { pattern: /\bahumado?s?\b/gi, en: "smoked" },
+    { pattern: /\bbio\b/gi, en: "organic" },
+    { pattern: /\bbiologique?s?\b/gi, en: "organic" },
+    { pattern: /\borg[aá]nico?s?\b/gi, en: "organic" },
+    { pattern: /\bfrais\b/gi, en: "fresh" },
+    { pattern: /\bfra[iî]che?s?\b/gi, en: "fresh" },
+    { pattern: /\bfrescos?\b/gi, en: "fresh" },
+    { pattern: /\bgrand(e|s)?\b/gi, en: "large" },
+    { pattern: /\bgrandes?\b/gi, en: "large" },
+    { pattern: /\blibre\s+parcours\b/gi, en: "free range" },
+    { pattern: /\bplein\s+air\b/gi, en: "free range" },
+    { pattern: /\bcamperos?\b/gi, en: "free range" },
+    { pattern: /\blait\b/gi, en: "milk" },
+    { pattern: /\bleche\b/gi, en: "milk" },
+    { pattern: /\bfromage\b/gi, en: "cheese" },
+    { pattern: /\bqueso\b/gi, en: "cheese" },
+    { pattern: /\byaourts?\b/gi, en: "yogurt" },
+    { pattern: /\byogures?\b/gi, en: "yogurt" },
+    { pattern: /\bsaumon\b/gi, en: "salmon" },
+    { pattern: /\bsalm[oó]n\b/gi, en: "salmon" },
+    { pattern: /\bthon\b/gi, en: "tuna" },
+    { pattern: /\bat[uú]n\b/gi, en: "tuna" },
+    { pattern: /\briz\b/gi, en: "rice" },
+    { pattern: /\barroz\b/gi, en: "rice" },
+  ];
+
+  const localizedFoodTerms = {
+    en: {},
+    zh: { chicken: "鸡肉", breast: "胸肉", eggs: "鸡蛋", plain: "原味", "without nitrite": "不含亚硝酸盐", "oven roasted": "烤箱烤制", "oven baked": "烘烤", grilled: "烤制", smoked: "烟熏", organic: "有机", fresh: "新鲜", large: "大号", "free range": "散养", milk: "牛奶", cheese: "奶酪", yogurt: "酸奶", salmon: "三文鱼", tuna: "金枪鱼", rice: "米饭" },
+    hi: { chicken: "चिकन", breast: "ब्रेस्ट", eggs: "अंडे", plain: "सादा", "without nitrite": "नाइट्राइट रहित", "oven roasted": "ओवन रोस्टेड", "oven baked": "ओवन बेक्ड", grilled: "ग्रिल्ड", smoked: "स्मोक्ड", organic: "ऑर्गेनिक", fresh: "ताजा", large: "बड़ा", "free range": "फ्री रेंज", milk: "दूध", cheese: "चीज़", yogurt: "दही", salmon: "सैल्मन", tuna: "टूना", rice: "चावल" },
+    es: { chicken: "pollo", breast: "pechuga", eggs: "huevos", plain: "natural", "without nitrite": "sin nitrito", "oven roasted": "asado al horno", "oven baked": "horneado", grilled: "a la parrilla", smoked: "ahumado", organic: "orgánico", fresh: "fresco", large: "grande", "free range": "campero", milk: "leche", cheese: "queso", yogurt: "yogur", salmon: "salmón", tuna: "atún", rice: "arroz" },
+    fr: { chicken: "poulet", breast: "blanc", eggs: "oeufs", plain: "nature", "without nitrite": "sans nitrite", "oven roasted": "rôti au four", "oven baked": "cuit au four", grilled: "grillé", smoked: "fumé", organic: "bio", fresh: "frais", large: "grand", "free range": "plein air", milk: "lait", cheese: "fromage", yogurt: "yaourt", salmon: "saumon", tuna: "thon", rice: "riz" },
+    ar: { chicken: "دجاج", breast: "صدر", eggs: "بيض", plain: "سادة", "without nitrite": "بدون نتريت", "oven roasted": "مشوي بالفرن", "oven baked": "مخبوز", grilled: "مشوي", smoked: "مدخن", organic: "عضوي", fresh: "طازج", large: "كبير", "free range": "حر التربية", milk: "حليب", cheese: "جبن", yogurt: "زبادي", salmon: "سلمون", tuna: "تونة", rice: "أرز" },
+    bn: { chicken: "মুরগি", breast: "বুকের মাংস", eggs: "ডিম", plain: "সাধারণ", "without nitrite": "নাইট্রাইট ছাড়া", "oven roasted": "ওভেনে রোস্ট", "oven baked": "ওভেনে বেকড", grilled: "গ্রিলড", smoked: "স্মোকড", organic: "জৈব", fresh: "তাজা", large: "বড়", "free range": "ফ্রি রেঞ্জ", milk: "দুধ", cheese: "চিজ", yogurt: "দই", salmon: "সালমন", tuna: "টুনা", rice: "ভাত" },
+    ru: { chicken: "курица", breast: "грудка", eggs: "яйца", plain: "натуральный", "without nitrite": "без нитрита", "oven roasted": "запеченный в духовке", "oven baked": "запеченный", grilled: "гриль", smoked: "копченый", organic: "органический", fresh: "свежий", large: "крупный", "free range": "свободный выгул", milk: "молоко", cheese: "сыр", yogurt: "йогурт", salmon: "лосось", tuna: "тунец", rice: "рис" },
+    pt: { chicken: "frango", breast: "peito", eggs: "ovos", plain: "natural", "without nitrite": "sem nitrito", "oven roasted": "assado no forno", "oven baked": "assado", grilled: "grelhado", smoked: "defumado", organic: "orgânico", fresh: "fresco", large: "grande", "free range": "caipira", milk: "leite", cheese: "queijo", yogurt: "iogurte", salmon: "salmão", tuna: "atum", rice: "arroz" },
+    ur: { chicken: "چکن", breast: "بریسٹ", eggs: "انڈے", plain: "سادہ", "without nitrite": "نائٹرائٹ کے بغیر", "oven roasted": "اوون روسٹڈ", "oven baked": "اوون بیکڈ", grilled: "گرلڈ", smoked: "دھواں دار", organic: "آرگینک", fresh: "تازہ", large: "بڑا", "free range": "فری رینج", milk: "دودھ", cheese: "چیز", yogurt: "دہی", salmon: "سالمون", tuna: "ٹونا", rice: "چاول" },
   };
 
   const nutrientDefs = {
@@ -950,9 +999,7 @@
 
     try {
       const textData = await fetchOpenFoodFacts(params);
-      products = (textData.products || [])
-        .filter(productIsInSelectedLanguage)
-        .filter((product) => productMatchesQuery(product, query));
+      products = (textData.products || []).filter((product) => productMatchesQuery(product, query));
     } catch (error) {
       firstError = error;
     }
@@ -966,7 +1013,7 @@
       });
       try {
         const categoryData = await fetchOpenFoodFacts(categoryParams);
-        products = products.concat((categoryData.products || []).filter(productIsInSelectedLanguage));
+        products = products.concat(categoryData.products || []);
       } catch (error) {
         if (!products.length) {
           throw firstError || error;
@@ -975,7 +1022,6 @@
     }
 
     return products
-      .filter(productIsInSelectedLanguage)
       .filter((product) => productMatchesQuery(product, query))
       .map((product) => normalizeOpenFoodFactsFood(product, query))
       .filter(Boolean);
@@ -1116,27 +1162,112 @@
     return product[`${field}_${state.language}`] || product[`${field}_en`] || product[field] || "";
   }
 
-  function productIsInSelectedLanguage(product) {
-    const selectedLanguages = openFoodFactsLanguageAliases[state.language] || [state.language];
-    return selectedLanguages.includes(String(product.lang || "").toLowerCase());
-  }
-
   function bestProductName(product, query) {
-    const localized = [
+    const localizedNames = [
       product[`product_name_${state.language}`],
       product[`generic_name_${state.language}`],
-      product[`categories_${state.language}`],
-    ].filter(Boolean);
-    const english = [product.product_name_en, product.generic_name_en, product.categories_en].filter(Boolean);
-    const sourceCategories = [product.categories].filter((value) => {
-      return state.language === "en" && queryTermsMatch(value, query);
-    });
+    ]
+      .map(displayNameCandidate)
+      .filter(Boolean);
+    const translatedNames = [
+      product.product_name,
+      product.generic_name,
+    ]
+      .map((value) => translateFoodName(value, state.language))
+      .filter(Boolean);
+    const englishNames = [product.product_name_en, product.generic_name_en]
+      .map(displayNameCandidate)
+      .filter(Boolean);
+    const localizedCategories = [product[`categories_${state.language}`]]
+      .map(displayNameCandidate)
+      .filter(Boolean);
+    const englishCategories = [product.categories_en]
+      .map(displayNameCandidate)
+      .filter(Boolean);
+    const translatedCategories = [product.categories]
+      .filter((value) => queryTermsMatch(value, query) || !firstDisplayableName([...localizedNames, ...englishNames]))
+      .map((value) => translateFoodName(value, state.language));
 
-    return firstDisplayableName([...localized, ...english, ...sourceCategories]) || fallbackFoodName(query);
+    return firstDisplayableName([
+      ...localizedNames,
+      ...translatedNames,
+      ...englishNames,
+      ...localizedCategories,
+      ...englishCategories,
+      ...translatedCategories,
+    ])
+      || translateFoodName(fallbackFoodName(query), state.language);
+  }
+
+  function displayNameCandidate(value) {
+    if (!value) {
+      return "";
+    }
+    return state.language === "en" ? translateFoodName(value, state.language) : cleanFoodName(value);
   }
 
   function firstDisplayableName(candidates) {
     return candidates.find((candidate) => cleanFoodName(candidate));
+  }
+
+  function translateFoodName(value, targetLanguage) {
+    const cleaned = cleanFoodName(value);
+    if (!cleaned) {
+      return "";
+    }
+
+    let english = cleaned;
+    foodPhraseTranslations.forEach(({ pattern, en }) => {
+      english = english.replace(pattern, en);
+    });
+    english = cleanTranslatedFoodName(english);
+    english = improveEnglishFoodPhrase(english);
+
+    if (!english || english === cleaned) {
+      return english || cleaned;
+    }
+    return localizeEnglishFoodPhrase(english, targetLanguage);
+  }
+
+  function cleanTranslatedFoodName(value) {
+    return String(value)
+      .replace(/\b(de|des|du|d'|la|le|les|el|del|al|en|y|et|a|à|au|aux|con|de\s+la)\b/gi, " ")
+      .replace(/\s+/g, " ")
+      .replace(/\s+,/g, ",")
+      .replace(/,\s*,/g, ",")
+      .replace(/^,|,$/g, "")
+      .trim();
+  }
+
+  function improveEnglishFoodPhrase(value) {
+    let phrase = value;
+    const modifiers = ["oven roasted", "oven baked", "grilled", "smoked", "organic", "fresh", "plain", "free range"];
+    modifiers.forEach((modifier) => {
+      if (phrase.includes("chicken breast") && phrase.includes(modifier)) {
+        phrase = phrase.replace(modifier, "").replace("chicken breast", `${modifier} chicken breast`);
+      }
+      if (phrase.includes("eggs") && phrase.includes(modifier)) {
+        phrase = phrase.replace(modifier, "").replace("eggs", `${modifier} eggs`);
+      }
+    });
+    return phrase.replace(/\s+/g, " ").trim();
+  }
+
+  function localizeEnglishFoodPhrase(value, targetLanguage) {
+    const terms = localizedFoodTerms[targetLanguage] || {};
+    let localized = value;
+
+    Object.entries(terms)
+      .sort((a, b) => b[0].length - a[0].length)
+      .forEach(([english, translated]) => {
+        localized = localized.replace(new RegExp(`\\b${escapeRegExp(english)}\\b`, "gi"), translated);
+      });
+
+    return localized;
+  }
+
+  function escapeRegExp(value) {
+    return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
   function productMatchesQuery(product, query) {
@@ -1149,6 +1280,9 @@
         localizedProductValue(product, "generic_name"),
         localizedProductValue(product, "product_name"),
         localizedProductValue(product, "categories"),
+        translateFoodName(product.generic_name, "en"),
+        translateFoodName(product.product_name, "en"),
+        translateFoodName(product.categories, "en"),
       ]
         .filter(Boolean)
         .join(" "),
