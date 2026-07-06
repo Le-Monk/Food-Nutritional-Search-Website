@@ -840,6 +840,10 @@
       return;
     }
 
+    await runSearch(query);
+  }
+
+  async function runSearch(query) {
     state.lastQuery = query;
     state.allResults = [];
     resultsGrid.innerHTML = "";
@@ -1015,10 +1019,7 @@
       return null;
     }
 
-    const name = localizedProductValue(product, "generic_name")
-      || localizedProductValue(product, "product_name")
-      || localizedProductValue(product, "categories")
-      || "Packaged food";
+    const name = bestProductName(product);
     const categories = localizedProductValue(product, "categories");
     const prep = inferPreparation([name, categories]);
     const metaParts = [t("openPackagedRecord")];
@@ -1095,6 +1096,21 @@
 
   function localizedProductValue(product, field) {
     return product[`${field}_${state.language}`] || product[`${field}_en`] || product[field] || "";
+  }
+
+  function bestProductName(product) {
+    return (
+      product[`product_name_${state.language}`]
+      || product[`generic_name_${state.language}`]
+      || product[`categories_${state.language}`]
+      || product.product_name_en
+      || product.generic_name_en
+      || product.categories_en
+      || product.product_name
+      || product.generic_name
+      || product.categories
+      || "Packaged food"
+    );
   }
 
   function productMatchesQuery(product, query) {
@@ -1382,12 +1398,16 @@
     });
   }
 
-  function changeLanguage() {
+  async function changeLanguage() {
     state.language = languageSelect.value || "en";
     localStorage.setItem(LANGUAGE_STORAGE, state.language);
     applyTranslations();
-    renderResults();
     renderMeal();
+    if (state.lastQuery) {
+      await runSearch(state.lastQuery);
+    } else {
+      renderResults();
+    }
   }
 
   function changeTargetMode() {
