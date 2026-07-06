@@ -961,7 +961,7 @@
 
     return products
       .filter((product) => productMatchesQuery(product, query))
-      .map(normalizeOpenFoodFactsFood)
+      .map((product) => normalizeOpenFoodFactsFood(product, query))
       .filter(Boolean);
   }
 
@@ -1008,7 +1008,7 @@
     };
   }
 
-  function normalizeOpenFoodFactsFood(product) {
+  function normalizeOpenFoodFactsFood(product, query) {
     const nutriments = product.nutriments || {};
     const nutrients = {};
     for (const [key, def] of Object.entries(nutrientDefs)) {
@@ -1019,7 +1019,7 @@
       return null;
     }
 
-    const name = bestProductName(product);
+    const name = bestProductName(product, query);
     const categories = localizedProductValue(product, "categories");
     const prep = inferPreparation([name, categories]);
     const metaParts = [t("openPackagedRecord")];
@@ -1040,7 +1040,7 @@
       id: `off-${product.code || crypto.randomUUID()}`,
       source: "Open Food Facts",
       sourceClass: "off",
-      title: titleCase(cleanFoodName(name)),
+      title: formatFoodTitle(name),
       prep,
       meta: metaParts.join(" - "),
       baseGrams: 100,
@@ -1098,19 +1098,22 @@
     return product[`${field}_${state.language}`] || product[`${field}_en`] || product[field] || "";
   }
 
-  function bestProductName(product) {
-    return (
-      product[`product_name_${state.language}`]
-      || product[`generic_name_${state.language}`]
-      || product[`categories_${state.language}`]
-      || product.product_name_en
-      || product.generic_name_en
-      || product.categories_en
-      || product.product_name
-      || product.generic_name
-      || product.categories
-      || "Packaged food"
-    );
+  function bestProductName(product, query) {
+    const localized = [
+      product[`product_name_${state.language}`],
+      product[`generic_name_${state.language}`],
+      product[`categories_${state.language}`],
+    ].filter(Boolean);
+    const english = [product.product_name_en, product.generic_name_en, product.categories_en].filter(Boolean);
+    const sourceCategories = [product.categories].filter((value) => {
+      return state.language === "en" && queryTermsMatch(value, query);
+    });
+
+    return firstDisplayableName([...localized, ...english, ...sourceCategories]) || fallbackFoodName(query);
+  }
+
+  function firstDisplayableName(candidates) {
+    return candidates.find((candidate) => cleanFoodName(candidate));
   }
 
   function productMatchesQuery(product, query) {
@@ -1132,6 +1135,19 @@
       .split(" ")
       .filter(Boolean)
       .some((term) => haystack.includes(term));
+  }
+
+  function queryTermsMatch(value, query) {
+    const normalizedValue = normalizeSearchTerm(value);
+    return normalizeSearchTerm(query)
+      .split(" ")
+      .filter(Boolean)
+      .some((term) => normalizedValue.includes(term));
+  }
+
+  function fallbackFoodName(query) {
+    const cleanQuery = cleanFoodName(query);
+    return cleanQuery || t("openPackagedRecord");
   }
 
   function normalizeSearchTerm(value) {
@@ -1527,11 +1543,26 @@
   }
 
   function cleanFoodName(name) {
-    return String(name)
+    const withoutLanguageTags = String(name)
+      .split(",")
+      .map((part) => part.trim())
+      .filter((part) => !/^[a-z]{2}:/i.test(part))
+      .join(", ");
+
+    return withoutLanguageTags
       .replace(/\s+/g, " ")
+      .replace(/-/g, " ")
       .replace(/, UPC:.*/i, "")
       .replace(/\(.*?not included.*?\)/gi, "")
       .trim();
+  }
+
+  function formatFoodTitle(value) {
+    const clean = cleanFoodName(value);
+    if (state.language !== "en" || /[^\x00-\x7F]/.test(clean)) {
+      return clean;
+    }
+    return titleCase(clean);
   }
 
   function titleCase(value) {
