@@ -34,7 +34,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -116,6 +117,28 @@ button {
 .top-nav a:focus-visible {
   color: var(--primary-dark);
   background: var(--surface-soft);
+}
+
+.language-control,
+.target-control {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.language-control {
+  min-width: 12rem;
+}
+
+select {
+  min-height: 2.75rem;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--text);
+  padding: 0.65rem 2rem 0.65rem 0.75rem;
 }
 
 main {
@@ -213,6 +236,7 @@ input {
 }
 
 input:focus,
+select:focus,
 button:focus-visible,
 summary:focus-visible {
   outline: 3px solid rgba(36, 107, 69, 0.22);
@@ -487,6 +511,10 @@ dd {
   margin-top: 1rem;
 }
 
+.target-control {
+  margin-top: 1rem;
+}
+
 .empty-meal {
   margin: 0;
   border-radius: 6px;
@@ -541,6 +569,68 @@ dd {
   margin: 1rem 0 0;
 }
 
+.nutrient-measure {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 0.6rem;
+}
+
+.measure-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.measure-badge {
+  border-radius: 999px;
+  padding: 0.18rem 0.55rem;
+  background: var(--surface-soft);
+  color: var(--primary-dark);
+  white-space: nowrap;
+}
+
+.measure-badge.low {
+  background: #e7f1ff;
+  color: var(--blue);
+}
+
+.measure-badge.ok {
+  background: #e8f5eb;
+  color: var(--primary-dark);
+}
+
+.measure-badge.high {
+  background: #fff0ed;
+  color: #8b2d1b;
+}
+
+.measure-track {
+  height: 0.45rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e4eadf;
+}
+
+.measure-fill {
+  display: block;
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+}
+
+.measure-fill.low {
+  background: var(--blue);
+}
+
+.measure-fill.high {
+  background: var(--accent);
+}
+
 .sources-panel {
   margin: 1.25rem 0 2rem;
   padding: clamp(1rem, 2.4vw, 1.5rem);
@@ -592,6 +682,10 @@ dd {
   .nutrition-grid,
   .totals-grid {
     grid-template-columns: 1fr;
+  }
+
+  .language-control {
+    min-width: 0;
   }
 
   .search-copy p:last-child {

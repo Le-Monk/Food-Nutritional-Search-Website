@@ -11,35 +11,41 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <a class="skip-link" href="#results">Skip to results</a>
+    <a class="skip-link" href="#results" data-i18n="skipLink">Skip to results</a>
     <header class="app-header">
       <div class="brand-lockup" aria-label="Nourish Search">
         <span class="brand-mark" aria-hidden="true">N</span>
         <span>
           <strong>Nourish Search</strong>
-          <small>Nutrition-first food lookup</small>
+          <small data-i18n="brandTagline">Nutrition-first food lookup</small>
         </span>
       </div>
-      <nav class="top-nav" aria-label="Page sections">
-        <a href="#search">Search</a>
-        <a href="#meal">Meal Calculator</a>
-        <a href="#sources">Sources</a>
+      <nav class="top-nav" aria-label="Page sections" data-i18n-aria-label="pageSections">
+        <a href="#search" data-i18n="navSearch">Search</a>
+        <a href="#meal" data-i18n="navMeal">Meal Calculator</a>
+        <a href="#sources" data-i18n="navSources">Sources</a>
       </nav>
+      <label class="language-control" for="language-select">
+        <span data-i18n="languageLabel">Language</span>
+        <select id="language-select" name="language"></select>
+      </label>
     </header>
 
     <main>
       <section id="search" class="search-panel" aria-labelledby="search-title">
         <div class="search-copy">
-          <p class="eyebrow">USDA + Open Food Facts</p>
-          <h1 id="search-title">Find clear nutrition facts by food, serving, and cooking style.</h1>
-          <p>
+          <p class="eyebrow" data-i18n="heroEyebrow">USDA + Open Food Facts</p>
+          <h1 id="search-title" data-i18n="heroTitle">
+            Find clear nutrition facts by food, serving, and cooking style.
+          </h1>
+          <p data-i18n="heroCopy">
             Search generic foods, compare records from both databases, and add ingredients to a
             meal without brand listings or price noise.
           </p>
         </div>
 
         <form class="search-box" id="food-search-form">
-          <label for="food-query">Food name</label>
+          <label for="food-query" data-i18n="foodName">Food name</label>
           <div class="search-row">
             <input
               id="food-query"
@@ -47,38 +53,47 @@
               type="search"
               value="eggs"
               placeholder="Try eggs, oats, salmon, rice..."
+              data-i18n-placeholder="searchPlaceholder"
               autocomplete="off"
               required
             />
-            <button type="submit">Search</button>
+            <button type="submit" data-i18n="searchButton">Search</button>
           </div>
           <div class="settings-row">
-            <label for="serving-size">Serving size</label>
+            <label for="serving-size" data-i18n="servingSize">Serving size</label>
             <div class="input-with-unit">
               <input id="serving-size" type="number" min="1" max="1000" step="1" value="100" />
               <span>g</span>
             </div>
             <details class="api-key-panel">
-              <summary>USDA key</summary>
-              <label for="usda-key">FoodData Central API key</label>
+              <summary data-i18n="usdaKeySummary">USDA key</summary>
+              <label for="usda-key" data-i18n="usdaKeyLabel">FoodData Central API key</label>
               <div class="key-row">
-                <input id="usda-key" type="password" autocomplete="off" placeholder="Paste key" />
-                <button type="button" id="save-key">Save</button>
+                <input
+                  id="usda-key"
+                  type="password"
+                  autocomplete="off"
+                  placeholder="Paste key"
+                  data-i18n-placeholder="pasteKey"
+                />
+                <button type="button" id="save-key" data-i18n="saveButton">Save</button>
               </div>
-              <p id="key-status" role="status">Stored only in this browser.</p>
+              <p id="key-status" role="status" data-i18n="keyStoredLocal">
+                Stored only in this browser.
+              </p>
             </details>
           </div>
         </form>
 
-        <div class="prep-filter" aria-label="Preparation filter">
-          <button class="prep-chip active" type="button" data-prep="all">All</button>
-          <button class="prep-chip" type="button" data-prep="raw">Raw</button>
-          <button class="prep-chip" type="button" data-prep="boiled">Boiled</button>
-          <button class="prep-chip" type="button" data-prep="fried">Fried</button>
-          <button class="prep-chip" type="button" data-prep="baked">Baked</button>
-          <button class="prep-chip" type="button" data-prep="roasted">Roasted</button>
-          <button class="prep-chip" type="button" data-prep="grilled">Grilled</button>
-          <button class="prep-chip" type="button" data-prep="canned">Canned</button>
+        <div class="prep-filter" aria-label="Preparation filter" data-i18n-aria-label="prepFilter">
+          <button class="prep-chip active" type="button" data-prep="all" data-i18n="prepAll">All</button>
+          <button class="prep-chip" type="button" data-prep="raw" data-i18n="prepRaw">Raw</button>
+          <button class="prep-chip" type="button" data-prep="boiled" data-i18n="prepBoiled">Boiled</button>
+          <button class="prep-chip" type="button" data-prep="fried" data-i18n="prepFried">Fried</button>
+          <button class="prep-chip" type="button" data-prep="baked" data-i18n="prepBaked">Baked</button>
+          <button class="prep-chip" type="button" data-prep="roasted" data-i18n="prepRoasted">Roasted</button>
+          <button class="prep-chip" type="button" data-prep="grilled" data-i18n="prepGrilled">Grilled</button>
+          <button class="prep-chip" type="button" data-prep="canned" data-i18n="prepCanned">Canned</button>
         </div>
       </section>
 
@@ -86,10 +101,10 @@
         <section id="results" class="results-section" aria-labelledby="results-title">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">Food Database</p>
-              <h2 id="results-title">Search results</h2>
+              <p class="eyebrow" data-i18n="resultsEyebrow">Food Database</p>
+              <h2 id="results-title" data-i18n="resultsTitle">Search results</h2>
             </div>
-            <p id="result-count" aria-live="polite">Ready to search.</p>
+            <p id="result-count" aria-live="polite" data-i18n="readyToSearch">Ready to search.</p>
           </div>
           <div id="status-message" class="status-message" role="status">
             Enter a food and search to compare nutrition records.
@@ -100,33 +115,47 @@
         <aside id="meal" class="meal-panel" aria-labelledby="meal-title">
           <div class="meal-header">
             <div>
-              <p class="eyebrow">Menu Builder</p>
-              <h2 id="meal-title">Meal nutritional calculator</h2>
+              <p class="eyebrow" data-i18n="mealEyebrow">Menu Builder</p>
+              <h2 id="meal-title" data-i18n="mealTitle">Meal nutritional calculator</h2>
             </div>
-            <button type="button" id="clear-meal" class="secondary-button">Clear</button>
+            <button type="button" id="clear-meal" class="secondary-button" data-i18n="clearButton">
+              Clear
+            </button>
           </div>
 
           <div id="meal-items" class="meal-items">
-            <p class="empty-meal">Add ingredients from the search results to start a meal total.</p>
+            <p class="empty-meal" data-i18n="emptyMeal">
+              Add ingredients from the search results to start a meal total.
+            </p>
           </div>
 
+          <label class="target-control" for="target-mode">
+            <span data-i18n="targetLabel">Nutrition target</span>
+            <select id="target-mode">
+              <option value="snack" data-i18n="targetSnack">Snack</option>
+              <option value="meal" selected data-i18n="targetMeal">Single meal</option>
+              <option value="day" data-i18n="targetDay">Full day</option>
+            </select>
+          </label>
+
           <dl class="totals-grid" id="meal-totals">
-            <div><dt>Calories</dt><dd data-total="calories">0</dd></div>
-            <div><dt>Protein</dt><dd data-total="protein">0 g</dd></div>
-            <div><dt>Fiber</dt><dd data-total="fiber">0 g</dd></div>
-            <div><dt>Carbs</dt><dd data-total="carbs">0 g</dd></div>
-            <div><dt>Fat</dt><dd data-total="fat">0 g</dd></div>
-            <div><dt>Sodium</dt><dd data-total="sodium">0 mg</dd></div>
+            <div data-total-card="calories"><dt data-nutrient-label="calories">Calories</dt><dd data-total="calories">0</dd></div>
+            <div data-total-card="protein"><dt data-nutrient-label="protein">Protein</dt><dd data-total="protein">0 g</dd></div>
+            <div data-total-card="fiber"><dt data-nutrient-label="fiber">Fiber</dt><dd data-total="fiber">0 g</dd></div>
+            <div data-total-card="carbs"><dt data-nutrient-label="carbs">Carbs</dt><dd data-total="carbs">0 g</dd></div>
+            <div data-total-card="fat"><dt data-nutrient-label="fat">Fat</dt><dd data-total="fat">0 g</dd></div>
+            <div data-total-card="sugar"><dt data-nutrient-label="sugar">Sugar</dt><dd data-total="sugar">0 g</dd></div>
+            <div data-total-card="sodium"><dt data-nutrient-label="sodium">Sodium</dt><dd data-total="sodium">0 mg</dd></div>
           </dl>
         </aside>
       </section>
 
       <section id="sources" class="sources-panel" aria-labelledby="sources-title">
         <div>
-          <p class="eyebrow">Responsible Nutrition Data</p>
-          <h2 id="sources-title">Source notes</h2>
+          <p class="eyebrow" data-i18n="sourceEyebrow">Responsible Nutrition Data</p>
+          <h2 id="sources-title" data-i18n="sourceTitle">Source notes</h2>
         </div>
-        <p>
+        <p data-i18n="sourceCopy">
           Results normalize nutrition per selected serving grams. USDA records are generally
           generic food composition records; Open Food Facts records may describe packaged foods and
           can be incomplete. Cooking style is inferred from record descriptions and categories.
@@ -151,7 +180,7 @@
               <span>g</span>
             </span>
           </label>
-          <button type="button" class="add-button">Add to meal</button>
+          <button type="button" class="add-button" data-i18n="addToMeal">Add to meal</button>
         </div>
       </article>
     </template>

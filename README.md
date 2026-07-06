@@ -9,6 +9,8 @@ Nourish Search is a lightweight nutritional food search website that combines ge
 - Filter by preparation style such as raw, boiled, fried, baked, roasted, grilled, or canned.
 - Adjust serving size per item and see calories, protein, fiber, carbohydrates, fat, sugar, and sodium recalculated.
 - Add foods to a meal calculator and sum nutrition for the whole menu.
+- Compare meal totals against snack, single-meal, or full-day nutrition targets, with low, in-range, and high guidance for every nutrient category.
+- Switch the website language. English is the default, with Mandarin Chinese, Hindi, Spanish, French, Arabic, Bengali, Russian, Portuguese, and Urdu also available.
 - Save a USDA API key locally in the browser without committing it to the repository.
 
 ## Data Sources
@@ -29,3 +31,5 @@ python -m http.server 8080
 Then visit `http://localhost:8080`.
 
 The app does not commit USDA API keys. Use the API key field in the page to save a key to `localStorage` for your browser session.
+
+Nutrition target guidance is an estimate based on common daily nutrition reference values and scaled for the selected target type. It is informational and not medical advice.
