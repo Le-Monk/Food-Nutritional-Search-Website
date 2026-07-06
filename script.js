@@ -37,6 +37,19 @@
     day: 1,
   };
 
+  const openFoodFactsLanguageAliases = {
+    en: ["en"],
+    zh: ["zh", "zh-cn", "zh-tw"],
+    hi: ["hi"],
+    es: ["es"],
+    fr: ["fr"],
+    ar: ["ar"],
+    bn: ["bn"],
+    ru: ["ru"],
+    pt: ["pt", "pt-br", "pt-pt"],
+    ur: ["ur"],
+  };
+
   const nutrientDefs = {
     calories: {
       label: "Calories",
@@ -937,7 +950,9 @@
 
     try {
       const textData = await fetchOpenFoodFacts(params);
-      products = (textData.products || []).filter((product) => productMatchesQuery(product, query));
+      products = (textData.products || [])
+        .filter(productIsInSelectedLanguage)
+        .filter((product) => productMatchesQuery(product, query));
     } catch (error) {
       firstError = error;
     }
@@ -951,7 +966,7 @@
       });
       try {
         const categoryData = await fetchOpenFoodFacts(categoryParams);
-        products = products.concat(categoryData.products || []);
+        products = products.concat((categoryData.products || []).filter(productIsInSelectedLanguage));
       } catch (error) {
         if (!products.length) {
           throw firstError || error;
@@ -960,6 +975,7 @@
     }
 
     return products
+      .filter(productIsInSelectedLanguage)
       .filter((product) => productMatchesQuery(product, query))
       .map((product) => normalizeOpenFoodFactsFood(product, query))
       .filter(Boolean);
@@ -1085,6 +1101,8 @@
       "product_name",
       "generic_name",
       "categories",
+      "lang",
+      "languages_tags",
       ...localized,
       "quantity",
       "serving_size",
@@ -1096,6 +1114,11 @@
 
   function localizedProductValue(product, field) {
     return product[`${field}_${state.language}`] || product[`${field}_en`] || product[field] || "";
+  }
+
+  function productIsInSelectedLanguage(product) {
+    const selectedLanguages = openFoodFactsLanguageAliases[state.language] || [state.language];
+    return selectedLanguages.includes(String(product.lang || "").toLowerCase());
   }
 
   function bestProductName(product, query) {
