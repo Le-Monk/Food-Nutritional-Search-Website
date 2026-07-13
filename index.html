@@ -6,7 +6,7 @@
     <title>Nourish Search | Nutrition Food Finder</title>
     <meta
       name="description"
-      content="Search USDA and Open Food Facts nutrition data, compare serving-based nutrients, and calculate meal totals."
+      content="Search USDA nutrition data, filter by nutrient goals, compare serving-based nutrients, and calculate meal totals."
     />
     <link rel="stylesheet" href="style.css" />
   </head>
@@ -25,33 +25,18 @@
         <a href="#meal" data-i18n="navMeal">Meal Calculator</a>
         <a href="#sources" data-i18n="navSources">Sources</a>
       </nav>
-      <label class="language-control" for="language-select">
-        <span data-i18n="languageLabel">Language</span>
-        <select id="language-select" name="language">
-          <option value="en">English (English)</option>
-          <option value="zh">Mandarin Chinese (中文)</option>
-          <option value="hi">Hindi (हिन्दी)</option>
-          <option value="es">Spanish (Español)</option>
-          <option value="fr">French (Français)</option>
-          <option value="ar">Arabic (العربية)</option>
-          <option value="bn">Bengali (বাংলা)</option>
-          <option value="ru">Russian (Русский)</option>
-          <option value="pt">Portuguese (Português)</option>
-          <option value="ur">Urdu (اردو)</option>
-        </select>
-      </label>
     </header>
 
     <main>
       <section id="search" class="search-panel" aria-labelledby="search-title">
         <div class="search-copy">
-          <p class="eyebrow" data-i18n="heroEyebrow">USDA + Open Food Facts</p>
+          <p class="eyebrow" data-i18n="heroEyebrow">USDA FoodData Central</p>
           <h1 id="search-title" data-i18n="heroTitle">
             Find clear nutrition facts by food, serving, and cooking style.
           </h1>
           <p data-i18n="heroCopy">
-            Search generic foods, compare records from both databases, and add ingredients to a
-            meal without brand listings or price noise.
+            Search USDA food records, filter by nutrient goals, and add ingredients to a meal
+            without brand listings or price noise.
           </p>
         </div>
 
@@ -63,7 +48,7 @@
               name="query"
               type="search"
               value="eggs"
-              placeholder="Try eggs, oats, salmon, rice..."
+              placeholder="Try eggs, foods under 300 calories, high fiber breakfast ideas..."
               data-i18n-placeholder="searchPlaceholder"
               autocomplete="off"
               required
@@ -168,8 +153,8 @@
         </div>
         <p data-i18n="sourceCopy">
           Results normalize nutrition per selected serving grams. USDA records are generally
-          generic food composition records; Open Food Facts records may describe packaged foods and
-          can be incomplete. Cooking style is inferred from record descriptions and categories.
+          USDA FoodData Central records describe food composition and may vary by preparation.
+          Advanced searches are interpreted as nutrient filters over USDA records.
         </p>
       </section>
     </main>
