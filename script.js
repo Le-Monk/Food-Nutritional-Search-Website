@@ -112,9 +112,18 @@
     heroTitle: "Find clear nutrition facts by food, serving, and cooking style.",
     heroCopy:
       "Search USDA food records, filter by nutrient goals, and add ingredients to a meal without brand listings or price noise.",
-    foodName: "Food name or nutrition search",
-    searchPlaceholder: "Try eggs, foods under 300 calories, high fiber breakfast ideas...",
+    foodName: "Food name",
+    searchPlaceholder: "Try eggs, chicken, oatmeal, rice...",
     searchButton: "Search",
+    filterTitle: "Nutrient filters",
+    filterNutrient: "Nutrient",
+    filterOperator: "Goal",
+    filterAmount: "Amount",
+    filterAtMost: "At most",
+    filterAtLeast: "At least",
+    addFilter: "Add filter",
+    clearFilters: "Clear filters",
+    noFilters: "No nutrient filters active.",
     servingSize: "Serving size",
     usdaKeySummary: "USDA key",
     usdaKeyLabel: "FoodData Central API key",
@@ -135,7 +144,7 @@
     resultsTitle: "Search results",
     readyToSearch: "Ready to search.",
     searching: 'Searching USDA nutrition records for "{query}"...',
-    noResults: "No USDA nutrition records matched. Try a broader food name or looser nutrient limits.",
+    noResults: "No USDA nutrition records matched. Try a broader food name or looser nutrient filters.",
     searchFailed: "Search failed. Please try again.",
     resultCount: "{count} result{plural}",
     noPrep: "No {prep} records found for this search. Try All preparations.",
@@ -150,7 +159,7 @@
     sourceEyebrow: "Responsible Nutrition Data",
     sourceTitle: "Source notes",
     sourceCopy:
-      "Results come from USDA FoodData Central and normalize nutrition per selected serving grams. Cooking style is inferred from USDA descriptions and categories. Advanced searches are interpreted as filters over USDA nutrients.",
+      "Results come from USDA FoodData Central and normalize nutrition per selected serving grams. Cooking style is inferred from USDA descriptions and categories. Nutrient filters are applied to USDA records after search.",
     addToMeal: "Add to meal",
     removeItem: "Remove {title}",
     targetShort: "{percent}% of target",
@@ -178,6 +187,7 @@
     lastParsedSearch: null,
     targetMode: localStorage.getItem(TARGET_STORAGE) || "meal",
     targetGoals: loadTargetGoals(),
+    filters: [],
   };
 
   const form = document.querySelector("#food-search-form");
@@ -194,6 +204,12 @@
   const keyStatus = document.querySelector("#key-status");
   const prepButtons = Array.from(document.querySelectorAll(".prep-chip"));
   const targetModeSelect = document.querySelector("#target-mode");
+  const filterNutrientSelect = document.querySelector("#filter-nutrient");
+  const filterOperatorSelect = document.querySelector("#filter-operator");
+  const filterValueInput = document.querySelector("#filter-value");
+  const addFilterButton = document.querySelector("#add-filter");
+  const clearFiltersButton = document.querySelector("#clear-filters");
+  const activeFilters = document.querySelector("#active-filters");
 
   initialize();
 
@@ -209,6 +225,14 @@
     });
     saveKeyButton.addEventListener("click", saveKey);
     servingInput.addEventListener("change", syncServingInputs);
+    addFilterButton.addEventListener("click", addNutrientFilter);
+    clearFiltersButton.addEventListener("click", clearNutrientFilters);
+    filterValueInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        addNutrientFilter();
+      }
+    });
     document.querySelector("#clear-meal").addEventListener("click", clearMeal);
     targetModeSelect.addEventListener("change", changeTargetMode);
 
@@ -222,6 +246,8 @@
     });
 
     buildTargetEditor();
+    buildFilterOptions();
+    renderActiveFilters();
     const storedKey = localStorage.getItem(USDA_KEY_STORAGE);
     if (storedKey) {
       keyInput.value = storedKey;
@@ -239,6 +265,79 @@
       return;
     }
     await runSearch(query);
+  }
+
+  function buildFilterOptions() {
+    filterNutrientSelect.innerHTML = "";
+    Object.entries(nutrientDefs).forEach(([key, def]) => {
+      const option = document.createElement("option");
+      option.value = key;
+      option.textContent = `${def.label}${def.unit ? ` (${def.unit})` : " (kcal)"}`;
+      filterNutrientSelect.append(option);
+    });
+  }
+
+  function addNutrientFilter() {
+    const key = filterNutrientSelect.value;
+    const operator = filterOperatorSelect.value === "min" ? "min" : "max";
+    const value = Number(filterValueInput.value);
+    if (!nutrientDefs[key] || !Number.isFinite(value) || value < 0) {
+      filterValueInput.focus();
+      return;
+    }
+
+    const existing = state.filters.find((filter) => filter.key === key && filter.operator === operator);
+    const nextFilter = {
+      key,
+      operator,
+      value,
+      label: filterLabel({ key, operator, value }),
+    };
+    if (existing) {
+      Object.assign(existing, nextFilter);
+    } else {
+      state.filters.push(nextFilter);
+    }
+
+    filterValueInput.value = "";
+    renderActiveFilters();
+    rerunSearchIfReady();
+  }
+
+  function clearNutrientFilters() {
+    state.filters = [];
+    renderActiveFilters();
+    rerunSearchIfReady();
+  }
+
+  function removeNutrientFilter(index) {
+    state.filters.splice(index, 1);
+    renderActiveFilters();
+    rerunSearchIfReady();
+  }
+
+  function renderActiveFilters() {
+    activeFilters.innerHTML = "";
+    if (!state.filters.length) {
+      activeFilters.textContent = uiText.noFilters;
+      return;
+    }
+
+    state.filters.forEach((filter, index) => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "filter-chip";
+      chip.textContent = `${filter.label} x`;
+      chip.setAttribute("aria-label", `Remove ${filter.label}`);
+      chip.addEventListener("click", () => removeNutrientFilter(index));
+      activeFilters.append(chip);
+    });
+  }
+
+  function rerunSearchIfReady() {
+    if (state.lastQuery) {
+      runSearch(state.lastQuery);
+    }
   }
 
   async function runSearch(query) {
@@ -330,7 +429,6 @@
   function parseAdvancedSearch(query) {
     const original = query.trim();
     let working = ` ${original.toLowerCase()} `;
-    const filters = [];
     const tags = [];
 
     Object.entries(commonSearchFallbacks).forEach(([word, searchTerm]) => {
@@ -340,42 +438,6 @@
       }
     });
 
-    Object.entries(nutrientDefs).forEach(([key, def]) => {
-      const aliases = def.aliases.join("|");
-      const beforeNutrient = new RegExp(`\\b(?:under|below|less than|max|maximum|fewer than)\\s+(\\d+(?:\\.\\d+)?)\\s*(?:${aliases})\\b`, "gi");
-      const afterNutrient = new RegExp(`\\b(?:${aliases})\\s+(?:under|below|less than|max|maximum)\\s+(\\d+(?:\\.\\d+)?)\\b`, "gi");
-      const minBefore = new RegExp(`\\b(?:over|above|more than|at least|min|minimum)\\s+(\\d+(?:\\.\\d+)?)\\s*(?:${aliases})\\b`, "gi");
-      const minAfter = new RegExp(`\\b(?:${aliases})\\s+(?:over|above|more than|at least|min|minimum)\\s+(\\d+(?:\\.\\d+)?)\\b`, "gi");
-
-      working = working.replace(beforeNutrient, (_match, value) => {
-        filters.push({ key, operator: "max", value: Number(value), label: `${def.label} under ${formatNutrient(key, Number(value))}` });
-        return " ";
-      });
-      working = working.replace(afterNutrient, (_match, value) => {
-        filters.push({ key, operator: "max", value: Number(value), label: `${def.label} under ${formatNutrient(key, Number(value))}` });
-        return " ";
-      });
-      working = working.replace(minBefore, (_match, value) => {
-        filters.push({ key, operator: "min", value: Number(value), label: `${def.label} at least ${formatNutrient(key, Number(value))}` });
-        return " ";
-      });
-      working = working.replace(minAfter, (_match, value) => {
-        filters.push({ key, operator: "min", value: Number(value), label: `${def.label} at least ${formatNutrient(key, Number(value))}` });
-        return " ";
-      });
-
-      const highPattern = new RegExp(`\\bhigh\\s+(?:in\\s+)?(?:${aliases})\\b|\\b(?:${aliases})\\s+rich\\b`, "gi");
-      const lowPattern = new RegExp(`\\blow\\s+(?:in\\s+)?(?:${aliases})\\b`, "gi");
-      working = working.replace(highPattern, () => {
-        filters.push({ key, operator: "min", value: def.high, label: `High ${def.label.toLowerCase()}` });
-        return " ";
-      });
-      working = working.replace(lowPattern, () => {
-        filters.push({ key, operator: "max", value: def.low, label: `Low ${def.label.toLowerCase()}` });
-        return " ";
-      });
-    });
-
     working = working.replace(/\b(food|foods|idea|ideas|option|options|show me|find|with|and|that are|for)\b/g, " ");
     working = working.replace(/\s+/g, " ").trim();
 
@@ -383,11 +445,13 @@
     if (/^(food|foods|idea|ideas)$/i.test(usdaQuery)) {
       usdaQuery = "meal";
     }
-    if (original.toLowerCase().includes("under 300 calories") && !working) {
-      usdaQuery = "food";
-    }
 
-    return { original, usdaQuery, filters, tags };
+    return {
+      original,
+      usdaQuery,
+      filters: state.filters.map((filter) => ({ ...filter, label: filterLabel(filter) })),
+      tags,
+    };
   }
 
   function matchesAdvancedFilters(item, parsedSearch) {
@@ -801,6 +865,15 @@
         Number.isFinite(nutrients[key]) ? nutrients[key] * factor : null,
       ]),
     );
+  }
+
+  function filterLabel(filter) {
+    const def = nutrientDefs[filter.key];
+    if (!def) {
+      return "";
+    }
+    const operatorText = filter.operator === "min" ? uiText.filterAtLeast.toLowerCase() : uiText.filterAtMost.toLowerCase();
+    return `${def.label} ${operatorText} ${formatNutrient(filter.key, filter.value)}`;
   }
 
   function formatNutrient(key, value) {

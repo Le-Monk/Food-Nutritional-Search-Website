@@ -218,11 +218,82 @@ h3 {
   font-weight: 750;
 }
 
+.search-tools {
+  display: grid;
+  grid-template-columns: minmax(18rem, 0.9fr) minmax(19rem, 1.1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
 .search-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.75rem;
   margin-top: 0.45rem;
+}
+
+.filter-box {
+  display: grid;
+  gap: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcf8;
+  padding: 0.9rem;
+}
+
+.filter-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.filter-heading strong {
+  color: var(--primary-dark);
+}
+
+.filter-controls {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.filter-controls label {
+  min-width: 0;
+}
+
+.compact-button {
+  min-height: 2.25rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.active-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  min-height: 2.25rem;
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 2.15rem;
+  border: 1px solid rgba(36, 107, 69, 0.2);
+  border-radius: 999px;
+  background: #e8f5eb;
+  color: var(--primary-dark);
+  padding: 0.35rem 0.75rem;
+  font-size: 0.88rem;
+}
+
+.filter-chip:hover {
+  background: var(--primary);
+  color: #fff;
 }
 
 input {
@@ -709,10 +780,17 @@ dd {
   }
 
   .search-row,
+  .search-tools,
+  .filter-controls,
   .settings-row,
   .key-row,
   .serving-control {
     grid-template-columns: 1fr;
+  }
+
+  .filter-heading {
+    align-items: stretch;
+    flex-direction: column;
   }
 
   .nutrition-grid,

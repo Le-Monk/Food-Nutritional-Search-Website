@@ -41,18 +41,51 @@
         </div>
 
         <form class="search-box" id="food-search-form">
-          <label for="food-query" data-i18n="foodName">Food name</label>
-          <div class="search-row">
-            <input
-              id="food-query"
-              name="query"
-              type="search"
-              placeholder="Try eggs, foods under 300 calories, high fiber breakfast ideas..."
-              data-i18n-placeholder="searchPlaceholder"
-              autocomplete="off"
-              required
-            />
-            <button type="button" id="search-button" data-i18n="searchButton">Search</button>
+          <div class="search-tools">
+            <div class="search-entry">
+              <label for="food-query" data-i18n="foodName">Food name</label>
+              <div class="search-row">
+                <input
+                  id="food-query"
+                  name="query"
+                  type="search"
+                  placeholder="Try eggs, chicken, oatmeal, rice..."
+                  data-i18n-placeholder="searchPlaceholder"
+                  autocomplete="off"
+                  required
+                />
+                <button type="button" id="search-button" data-i18n="searchButton">Search</button>
+              </div>
+            </div>
+            <div class="filter-box" aria-labelledby="filter-title">
+              <div class="filter-heading">
+                <strong id="filter-title" data-i18n="filterTitle">Nutrient filters</strong>
+                <button type="button" class="secondary-button compact-button" id="clear-filters" data-i18n="clearFilters">
+                  Clear filters
+                </button>
+              </div>
+              <div class="filter-controls">
+                <label for="filter-nutrient">
+                  <span data-i18n="filterNutrient">Nutrient</span>
+                  <select id="filter-nutrient"></select>
+                </label>
+                <label for="filter-operator">
+                  <span data-i18n="filterOperator">Goal</span>
+                  <select id="filter-operator">
+                    <option value="max" data-i18n="filterAtMost">At most</option>
+                    <option value="min" data-i18n="filterAtLeast">At least</option>
+                  </select>
+                </label>
+                <label for="filter-value">
+                  <span data-i18n="filterAmount">Amount</span>
+                  <input id="filter-value" type="number" min="0" step="0.1" placeholder="300" />
+                </label>
+                <button type="button" id="add-filter" data-i18n="addFilter">Add filter</button>
+              </div>
+              <div id="active-filters" class="active-filters" aria-live="polite">
+                No nutrient filters active.
+              </div>
+            </div>
           </div>
           <div class="settings-row">
             <label for="serving-size" data-i18n="servingSize">Serving size</label>
@@ -151,9 +184,9 @@
           <h2 id="sources-title" data-i18n="sourceTitle">Source notes</h2>
         </div>
         <p data-i18n="sourceCopy">
-          Results normalize nutrition per selected serving grams. USDA records are generally
-          USDA FoodData Central records describe food composition and may vary by preparation.
-          Advanced searches are interpreted as nutrient filters over USDA records.
+          Results come from USDA FoodData Central and normalize nutrition per selected serving
+          grams. USDA records describe food composition and may vary by preparation.
+          Nutrient filters are applied to USDA records after search.
         </p>
       </section>
     </main>
