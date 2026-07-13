@@ -272,7 +272,7 @@
     Object.entries(nutrientDefs).forEach(([key, def]) => {
       const option = document.createElement("option");
       option.value = key;
-      option.textContent = `${def.label}${def.unit ? ` (${def.unit})` : " (kcal)"}`;
+      option.textContent = def.label;
       filterNutrientSelect.append(option);
     });
   }
@@ -450,6 +450,7 @@
       original,
       usdaQuery,
       filters: state.filters.map((filter) => ({ ...filter, label: filterLabel(filter) })),
+      servingGrams: getServingGrams(),
       tags,
     };
   }
@@ -458,8 +459,9 @@
     if (!parsedSearch.filters.length) {
       return true;
     }
+    const scaledNutrients = scaleNutrients(item.nutrients, parsedSearch.servingGrams, item.baseGrams);
     return parsedSearch.filters.every((filter) => {
-      const value = item.nutrients[filter.key];
+      const value = scaledNutrients[filter.key];
       if (!Number.isFinite(value)) {
         return false;
       }
@@ -480,8 +482,9 @@
 
   function resultScore(item, parsedSearch) {
     let score = item.title.toLowerCase().includes(parsedSearch.usdaQuery.toLowerCase()) ? 10 : 0;
+    const scaledNutrients = scaleNutrients(item.nutrients, parsedSearch.servingGrams, item.baseGrams);
     parsedSearch.filters.forEach((filter) => {
-      const value = item.nutrients[filter.key];
+      const value = scaledNutrients[filter.key];
       if (!Number.isFinite(value)) {
         return;
       }
@@ -495,7 +498,7 @@
   }
 
   function searchSummaryText(parsedSearch) {
-    const parts = [`USDA query: "${parsedSearch.usdaQuery}"`];
+    const parts = [`USDA query: "${parsedSearch.usdaQuery}"`, `Serving: ${parsedSearch.servingGrams} g`];
     if (parsedSearch.filters.length) {
       parts.push(`${uiText.activeFilters}: ${parsedSearch.filters.map((filter) => filter.label).join(", ")}`);
     }
@@ -583,6 +586,10 @@
 
   function syncServingInputs() {
     const grams = getServingGrams();
+    if (state.filters.length && state.lastQuery) {
+      runSearch(state.lastQuery);
+      return;
+    }
     document.querySelectorAll(".card-serving").forEach((input) => {
       input.value = grams;
     });

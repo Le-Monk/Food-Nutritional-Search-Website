@@ -6,7 +6,7 @@ Nourish Search is a lightweight nutritional food search website that uses generi
 
 - Search foods such as eggs, rice, apple, chicken, or yogurt.
 - Search USDA FoodData Central records in one accessible result grid.
-- Set nutrient filters beside the search box, such as calories at most 300 or fiber at least 5 g.
+- Set hard nutrient filters beside the search box, such as calories at most 300 or fiber at least 5 g, using the selected serving size.
 - Filter by preparation style such as raw, boiled, fried, baked, roasted, grilled, or canned.
 - Adjust serving size per item and see calories, protein, fiber, carbohydrates, fat, sugar, and sodium recalculated.
 - Add foods to a meal calculator and sum nutrition for the whole menu.
