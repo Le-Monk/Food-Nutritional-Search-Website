@@ -182,6 +182,7 @@
 
   const form = document.querySelector("#food-search-form");
   const queryInput = document.querySelector("#food-query");
+  const searchButton = document.querySelector("#search-button");
   const servingInput = document.querySelector("#serving-size");
   const resultsGrid = document.querySelector("#results-grid");
   const resultCount = document.querySelector("#result-count");
@@ -200,6 +201,12 @@
     applyStaticText();
     targetModeSelect.value = state.targetMode;
     form.addEventListener("submit", handleSearch);
+    searchButton.addEventListener("click", handleSearch);
+    queryInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        handleSearch(event);
+      }
+    });
     saveKeyButton.addEventListener("click", saveKey);
     servingInput.addEventListener("change", syncServingInputs);
     document.querySelector("#clear-meal").addEventListener("click", clearMeal);
@@ -225,7 +232,8 @@
   }
 
   async function handleSearch(event) {
-    event.preventDefault();
+    event?.preventDefault();
+    event?.stopPropagation();
     const query = queryInput.value.trim();
     if (!query) {
       return;
